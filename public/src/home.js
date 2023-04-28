@@ -1,3 +1,13 @@
+function partitionBooksByBorrowedStatus(books = []) {
+    let checkedOut = books.filter((book) => {
+        return book.borrows[0].returned === false;
+    });
+    let returnedTrue = books.filter((book) => {
+        return book.borrows[0].returned === true;
+    });
+    return [checkedOut, returnedTrue];
+}
+// HELPER FUNCTION above^
 function getTotalBooksCount(books) {
     return books.length;
 }
@@ -7,7 +17,8 @@ function getTotalAccountsCount(accounts) {
 }
 
 function getBooksBorrowedCount(books) {
-    return books.filter((book) => book.borrows[0].returned === false).length;
+    let result = partitionBooksByBorrowedStatus(books);
+    return result[0].length;
 }
 
 //---------------------------------------------------------------------------------
@@ -24,20 +35,21 @@ function getBooksBorrowedCount(books) {
 
 // Even if there is a tie, the array should only contain no more than five objects.
 function getMostCommonGenres(books = []) {
-    const newObj = {};
-    books.forEach((book) => {
-        if (newObj.hasOwnProperty(book.genre)) {
-            newObj[book.genre]++;
+    const newObj = books.reduce((acc, book) => {
+        if (acc.hasOwnProperty(book.genre)) {
+            acc[book.genre]++;
         } else {
-            newObj[book.genre] = 1;
+            acc[book.genre] = 1;
         }
-    });
+        return acc;
+    }, {});
     const updatedKeyArr = Object.keys(newObj);
     let result = updatedKeyArr.map((element) => {
         return { name: element, count: newObj[element] };
     });
     return result.sort((a, b) => b.count - a.count).slice(0, 5);
 }
+
 function getMostPopularBooks(books) {
     const popBook = [];
     //loop through books
